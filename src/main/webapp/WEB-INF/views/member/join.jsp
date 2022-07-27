@@ -42,6 +42,8 @@
 					<input class="pwck_input">
 				</div>
 				<span class="final_pwck_ck">비밀번호 확인을 입력해주세요.</span>
+				<span class="pwck_input_re_1">비밀번호가 일치합니다.</span>
+                <span class="pwck_input_re_2">비밀번호가 일치하지 않습니다.</span>
 			</div>
 			<div class="user_wrap">
 				<div class="user_name">이름</div>
@@ -56,6 +58,7 @@
 					<input class="mail_input" name="memberMail">
 				</div>
 				<span class="final_mail_ck">이메일을 입력해주세요.</span>
+				<sapn class="mail_input_box_warn"></sapn>
 				<div class="mail_check_wrap">
 					<div class="mail_check_input_box" id="mail_check_input_box_false">
 						<input class="mail_check_input" disabled="disabled">
@@ -151,10 +154,38 @@ $(document).ready(function(){
 			$('.final_pwck_ck').css('display','none');
 			pwckCheck = true;
 		}
+
+        /* 이름 유효성 검사 */
+        if(name == ""){
+            $('.final_name_ck').css('display','block');
+            nameCheck = false;
+        }else{
+            $('.final_name_ck').css('display','none');
+            nameCheck = true;
+        }
+        if(mail == ""){
+        	$('.final_mail_ck').css('dispaly','block');
+        	mailnumCheck = false;
+        }else{
+        	$('.final_mail_ck').css('dispaly','none');
+        	mailnumCheck = true;
+        }
+        /* 주소 유효성 검사 */
+        if(addr == ""){
+            $('.final_addr_ck').css('display','block');
+            addressCheck = false;
+        }else{
+        	$('.final_addr_ck').css('display','none');
+            addressCheck = true;
+        }
+        
+        /* 최종 유효성 검사 */
+		/*  if(idCheck&&idckCheck&&pwCheck&&pwckCheck&&pwckcorCheck&&nameCheck&&mailCheck&&mailnumCheck&&addressCheck ){ */
+			$("#join_form").attr("action", "/member/join");
+			$("#join_form").submit();			
+	/* 	}	 
 		
-		
-		//$("#join_form").attr("action", "/member/join");
-		//$("#join_form").submit();
+		return false; */
  		}); 
 	});
 	
@@ -186,8 +217,19 @@ $(document).ready(function(){
 		$(".mail_check_button").click(function(){
 			
 		var email = $(".mail_input").val(); // 입력한 이메일
-		var checkBox = $(".mail_check_input") //인증번호 입력란
-		var boxWrap = $(".mail_check_input_box") // 인증번호 입력란 박스
+		var checkBox = $(".mail_check_input"); //인증번호 입력란
+		var boxWrap = $(".mail_check_input_box"); // 인증번호 입력란 박스
+		var warnMsg = $(".mail_input_box_warn"); //이메일 입력 경고글
+		
+		/*이멜일 형식 유효성 검사  */
+		 if (mailFormCheck(email)){
+			 warnMsg.html("이메일이 전송 되었습니다. 이메일을 확인해주세요");
+			 warnMsg.css("display","inline-block");
+		 }else{ 
+			 warnMsg.html("올바르지 못한 이메일 형식입니다.");
+			 warnMsg.css("display","inline-block");
+			 return false;
+		 }
 		
 		$.ajax({
 		type:"GET",
@@ -208,9 +250,11 @@ $(document).ready(function(){
 			if(inputCode == code){
 				checkResult.html("인증번호가 일치합니다."); //일치할경우
 				checkResult.attr("class","correct");
+				 mailnumCheck = true;     // 일치할 경우
 			}else{    // 일치하지 않을 경우
 				checkResult.html("인증번호를 다시 확인해주세요");
 				checkResult.attr("class", "incorrect");
+				 mailnumCheck = false;    // 일치하지 않을 경우
 			}
 			
 		});//인증번호 end
@@ -291,7 +335,16 @@ $(document).ready(function(){
 			        pwckcorCheck = false;
 			}
 		    
-		});    
+		}); 
+		
+		 /* 입력 이메일 형식 유효성 검사 */
+		 function mailFormCheck(email){
+		 
+			 var form =  /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+			 return form.test(email);
+		 
+		}
+		 
 </script>
 </body>
 </html>
